@@ -67,7 +67,7 @@ public class TcpServer {
                 for (String[] s : res) {
                     System.out.println();
                     for (String ss : s) {
-                        System.out.println(ss + " ");
+                        System.out.print(ss + " ");
                     }
                 }
             }
