@@ -60,6 +60,21 @@ public class Main {
       if (nextLine.contains("PING")) {
         outputStream.write("+PONG\r\n".getBytes()); // "PONG in RESP serialization protocol"
       }
+      if (nextLine.contains("ECHO")) {
+        String respHeader = sc.nextLine();
+        String respBody = sc.nextLine();
+        String response = respHeader + "\r\n" + respBody + "\r\n";
+        outputStream.write(response.getBytes());
+      }
     }
   }
+
+  // public static String encodingRespString(String s) {
+  // String resp = "$";
+  // resp += s.length();
+  // resp += "\r\n";
+  // resp += s;
+  // resp += "\r\n";
+  // return resp;
+  // }
 }
