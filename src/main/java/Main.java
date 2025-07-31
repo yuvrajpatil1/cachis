@@ -1,7 +1,9 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Main {
   public static void main(String[] args) {
@@ -21,8 +23,14 @@ public class Main {
       // Wait for connection from client.
       clientSocket = serverSocket.accept();
 
+      InputStream inputStream = clientSocket.getInputStream();
+
+      Scanner sc = new Scanner(inputStream);
+
+      System.out.println(sc.nextLine());
+
       OutputStream outputStream = clientSocket.getOutputStream();
-      outputStream.write("+PONG\r\n".getBytes());
+      outputStream.write("+PONG\r\n".getBytes()); // "PONG in RESP serialization protocol"
     } catch (IOException e) {
       System.out.println("IOException: " + e.getMessage());
     } finally {
