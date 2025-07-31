@@ -24,13 +24,17 @@ public class Main {
       clientSocket = serverSocket.accept();
 
       InputStream inputStream = clientSocket.getInputStream();
+      OutputStream outputStream = clientSocket.getOutputStream();
 
       Scanner sc = new Scanner(inputStream);
 
-      System.out.println(sc.nextLine());
+      while (sc.hasNextLine()) {
+        String nextLine = sc.nextLine();
+        if (nextLine.contains("PING")) {
+          outputStream.write("+PONG\r\n".getBytes()); // "PONG in RESP serialization protocol"
+        }
+      }
 
-      OutputStream outputStream = clientSocket.getOutputStream();
-      outputStream.write("+PONG\r\n".getBytes()); // "PONG in RESP serialization protocol"
     } catch (IOException e) {
       System.out.println("IOException: " + e.getMessage());
     } finally {
