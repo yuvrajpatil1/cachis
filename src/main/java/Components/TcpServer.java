@@ -65,7 +65,7 @@ public class TcpServer {
                 // bytes parsing into strings
                 List<String[]> res = respSerializer.deserialize(buffer);
                 for (String[] s : res) {
-                    System.out.println();
+                    System.out.println(res.size());
                     for (String ss : s) {
                         System.out.print(ss + " ");
                     }
