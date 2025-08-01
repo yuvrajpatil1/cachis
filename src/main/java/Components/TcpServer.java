@@ -16,6 +16,9 @@ public class TcpServer {
     @Autowired
     private RespSerializer respSerializer;
 
+    @Autowired
+    private CommandHandler commandHandler;
+
     public void startServer() {
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
@@ -63,30 +66,32 @@ public class TcpServer {
             int bytesRead = client.inputStream.read(buffer);
             if (bytesRead > 0) {
                 // bytes parsing into strings
-                List<String[]> res = respSerializer.deserialize(buffer);
-                for (String[] s : res) {
-                    System.out.println(res.size());
-                    for (String ss : s) {
-                        System.out.print(ss + " ");
-                    }
+                List<String[]> commands = respSerializer.deserialize(buffer);
+                for (String[] command : commands) {
+                    handleCommand(command, client);
                 }
             }
         }
+    }
 
-        // Scanner sc = new Scanner(client.inputStream);
+    private void handleCommand(String[] command, Client client) {
+        String res = "";
+        switch (command[0]) {
+            case "PING":
+                res = commandHandler.ping(command);
+                break;
+            case "ECHO":
+                res = commandHandler.echo(command);
+                break;
+            case "SET":
+                res = commandHandler.set(command);
+        }
 
-        // while (sc.hasNextLine()) {
-        // String nextLine = sc.nextLine();
-        // if (nextLine.contains("PING")) {
-        // outputStream.write("+PONG\r\n".getBytes()); // "PONG in RESP serialization
-        // protocol"
-        // }
-        // if (nextLine.contains("ECHO")) {
-        // String respHeader = sc.nextLine();
-        // String respBody = sc.nextLine();
-        // String response = respHeader + "\r\n" + respBody + "\r\n";
-        // outputStream.write(response.getBytes());
-        // }
-        // }
+        if (res != null && !res.equals(""))
+            try {
+                client.outputStream.write(res.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 }

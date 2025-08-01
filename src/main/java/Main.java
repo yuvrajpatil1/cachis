@@ -16,12 +16,12 @@ public class Main {
 
   }
 
-  public static String encodingRespString(String s) {
-    String resp = "$";
-    resp += s.length();
-    resp += "\r\n";
-    resp += s;
-    resp += "\r\n";
-    return resp;
-  }
+  // public static String encodingRespString(String s) {
+  // String resp = "$";
+  // resp += s.length();
+  // resp += "\r\n";
+  // resp += s;
+  // resp += "\r\n";
+  // return resp;
+  // }
 }
