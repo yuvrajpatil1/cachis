@@ -1,15 +1,22 @@
-package Components;
+package Components.Repository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import Components.Service.CommandHandler;
+import Components.Service.RespSerializer;
+
 @Component
 public class Store {
+    private static final Logger logger = Logger.getLogger(Store.class.getName());
+
     public ConcurrentHashMap<String, Value> map;
 
     @Autowired
@@ -29,7 +36,7 @@ public class Store {
             map.put(key, value);
             return "+OK\r\n";
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
             return "$-1\r\n";
         }
     }
@@ -42,7 +49,7 @@ public class Store {
             map.put(key, value);
             return "+OK\r\n";
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
             return "$-1\r\n";
         }
     }
@@ -60,7 +67,7 @@ public class Store {
         } catch (
 
         Exception e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
             return "$-1\r\n";
         }
     }

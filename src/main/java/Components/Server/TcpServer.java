@@ -1,4 +1,4 @@
-package Components;
+package Components.Server;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,12 +7,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import Components.Service.CommandHandler;
+import Components.Service.RespSerializer;
+import Infra.Client;
+
 @Component
 public class TcpServer {
+    private static final Logger logger = Logger.getLogger(TcpServer.class.getName());
+
     @Autowired
     private RespSerializer respSerializer;
 
@@ -47,14 +55,14 @@ public class TcpServer {
             }
 
         } catch (IOException e) {
-            System.out.println("IOException: " + e.getMessage());
+            logger.log(Level.SEVERE, "IOException: " + e.getMessage());
         } finally {
             try {
                 if (clientSocket != null) {
                     clientSocket.close();
                 }
             } catch (IOException e) {
-                System.out.println("IOException: " + e.getMessage());
+                logger.log(Level.SEVERE, "IOException: " + e.getMessage());
             }
         }
     }
@@ -88,6 +96,9 @@ public class TcpServer {
                 break;
             case "GET":
                 res = commandHandler.get(command);
+                break;
+            case "INFO":
+                res = commandHandler.info(command);
                 break;
         }
 
