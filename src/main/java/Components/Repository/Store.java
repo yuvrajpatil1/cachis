@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import Components.Service.CommandHandler;
 import Components.Service.RespSerializer;
 
 @Component
