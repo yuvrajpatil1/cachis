@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RespSerializer {
+    public String serializeBulkString(String s) {
+        int length = s.length();
+        String respHeader = "$" + length;
+        String respBody = s;
+        return respHeader + "\r\n" + respBody + "\r\n";
+    }
 
     public int getParts(char[] dataArr, int i, String[] subArray) {
         int j = 0;

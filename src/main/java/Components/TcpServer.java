@@ -85,6 +85,10 @@ public class TcpServer {
                 break;
             case "SET":
                 res = commandHandler.set(command);
+                break;
+            case "GET":
+                res = commandHandler.get(command);
+                break;
         }
 
         if (res != null && !res.equals(""))
