@@ -16,182 +16,184 @@
 
 // @SpringBootTest(classes = AppConfig.class)
 // public class StoreTest {
-//     @Autowired
-//     private Store store;
-//     private RespSerializer respSerializer;
+// @Autowired
+// private Store store;
+// private RespSerializer respSerializer;
 
-//     @BeforeEach
-//     public void setUp() {
-//         store.map.clear();
-//     }
-
-//     @Test
-//     public void testSetAndGetKey() {
-//         String key = "testKey";
-//         String value = "testValue";
-
-//         String setResult = store.set(key, value);
-//         String getResult = store.get(key);
-
-//         assertEquals("+OK\r\n", setResult);
-//         assertEquals(respSerializer.serializeBulkString(value), getResult);
-//     }
-
-//     @Test
-//     public void testSetAndGetKeyExpiry() throws InterruptedException {
-//         String key = "testKey";
-//         String value = "testValue";
-//         int expiryMilliseconds = 100;
-
-//         String setResult = store.set(key, value, expiryMilliseconds);
-//         String getResult = store.get(key);
-
-//         Thread.sleep((long) 100.0);
-
-//         String getResultExpiry = store.get(key);
-
-//         assertEquals("+OK\r\n", setResult);
-//         assertEquals(respSerializer.serializeBulkString(value), getResult);
-
-//         assertEquals("$-1\r\n", getResultExpiry);
-//     }
-
-//     @Test
-//     public void testSetAndGetKeyExpiryReset() throws InterruptedException {
-//         String key = "testKey";
-//         String value = "testValue";
-//         String value2 = "testValue2";
-//         int expiryMilliseconds = 100;
-
-//         String setResult = store.set(key, value, expiryMilliseconds);
-//         String getResult = store.get(key);
-//         String setResultReset = store.set(key, value2, expiryMilliseconds * 5);
-
-//         Thread.sleep((long) 100.0);
-//         String getResultReset = store.get(key);
-
-//         assertEquals("+OK\r\n", setResult);
-//         assertEquals("+OK\r\n", setResultReset);
-//         assertEquals(respSerializer.serializeBulkString(value), getResult);
-
-//         assertEquals(respSerializer.serializeBulkString(value2), getResultReset);
-//     }
-
-//     @Test
-//     public void testConcurrentlySetting() throws InterruptedException {
-//         List<CompletableFuture<Void>> l = new ArrayList<>();
-//         for (int i = 0; i < 10; i++) {
-//             int finalI = i;
-//             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-//                 for (int j = 0; j < 100; j++) {
-//                     store.set("key" + j + "," + finalI, "ooga booga");
-//                 }
-//             });
-//             l.add(future);
-//         }
-//         CompletableFuture<Void> allFutures = CompletableFuture.allOf(l.toArray(new CompletableFuture[l.size()]));
-//         allFutures.join();
-
-//         assertEquals(1000, store.getKeys().size());
-//     }
+// @BeforeEach
+// public void setUp() {
+// store.map.clear();
 // }
 
-package Components.Repository;
+// @Test
+// public void testSetAndGetKey() {
+// String key = "testKey";
+// String value = "testValue";
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+// String setResult = store.set(key, value);
+// String getResult = store.get(key);
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+// assertEquals("+OK\r\n", setResult);
+// assertEquals(respSerializer.serializeBulkString(value), getResult);
+// }
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+// @Test
+// public void testSetAndGetKeyExpiry() throws InterruptedException {
+// String key = "testKey";
+// String value = "testValue";
+// int expiryMilliseconds = 100;
 
-import Components.Service.RespSerializer;
-import Config.AppConfig;
+// String setResult = store.set(key, value, expiryMilliseconds);
+// String getResult = store.get(key);
 
-@SpringBootTest(classes = AppConfig.class)
-public class StoreTest {
-    @Autowired
-    private Store store;
+// Thread.sleep((long) 100.0);
 
-    @Autowired // Add this annotation
-    private RespSerializer respSerializer;
+// String getResultExpiry = store.get(key);
 
-    @BeforeEach
-    public void setUp() {
-        store.map.clear();
-    }
+// assertEquals("+OK\r\n", setResult);
+// assertEquals(respSerializer.serializeBulkString(value), getResult);
 
-    @Test
-    public void testSetAndGetKey() {
-        String key = "testKey";
-        String value = "testValue";
+// assertEquals("$-1\r\n", getResultExpiry);
+// }
 
-        String setResult = store.set(key, value);
-        String getResult = store.get(key);
+// @Test
+// public void testSetAndGetKeyExpiryReset() throws InterruptedException {
+// String key = "testKey";
+// String value = "testValue";
+// String value2 = "testValue2";
+// int expiryMilliseconds = 100;
 
-        assertEquals("+OK\r\n", setResult);
-        assertEquals(respSerializer.serializeBulkString(value), getResult);
-    }
+// String setResult = store.set(key, value, expiryMilliseconds);
+// String getResult = store.get(key);
+// String setResultReset = store.set(key, value2, expiryMilliseconds * 5);
 
-    @Test
-    public void testSetAndGetKeyExpiry() throws InterruptedException {
-        String key = "testKey";
-        String value = "testValue";
-        int expiryMilliseconds = 100;
+// Thread.sleep((long) 100.0);
+// String getResultReset = store.get(key);
 
-        String setResult = store.set(key, value, expiryMilliseconds);
-        String getResult = store.get(key);
+// assertEquals("+OK\r\n", setResult);
+// assertEquals("+OK\r\n", setResultReset);
+// assertEquals(respSerializer.serializeBulkString(value), getResult);
 
-        Thread.sleep((long) 100.0);
+// assertEquals(respSerializer.serializeBulkString(value2), getResultReset);
+// }
 
-        String getResultExpiry = store.get(key);
+// @Test
+// public void testConcurrentlySetting() throws InterruptedException {
+// List<CompletableFuture<Void>> l = new ArrayList<>();
+// for (int i = 0; i < 10; i++) {
+// int finalI = i;
+// CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+// for (int j = 0; j < 100; j++) {
+// store.set("key" + j + "," + finalI, "ooga booga");
+// }
+// });
+// l.add(future);
+// }
+// CompletableFuture<Void> allFutures = CompletableFuture.allOf(l.toArray(new
+// CompletableFuture[l.size()]));
+// allFutures.join();
 
-        assertEquals("+OK\r\n", setResult);
-        assertEquals(respSerializer.serializeBulkString(value), getResult);
+// assertEquals(1000, store.getKeys().size());
+// }
+// }
 
-        assertEquals("$-1\r\n", getResultExpiry);
-    }
+// package Components.Repository;
 
-    @Test
-    public void testSetAndGetKeyExpiryReset() throws InterruptedException {
-        String key = "testKey";
-        String value = "testValue";
-        String value2 = "testValue2";
-        int expiryMilliseconds = 100;
+// import static org.junit.jupiter.api.Assertions.assertEquals;
 
-        String setResult = store.set(key, value, expiryMilliseconds);
-        String getResult = store.get(key);
-        String setResultReset = store.set(key, value2, expiryMilliseconds * 5);
+// import java.util.ArrayList;
+// import java.util.List;
+// import java.util.concurrent.CompletableFuture;
 
-        Thread.sleep((long) 100.0);
-        String getResultReset = store.get(key);
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-        assertEquals("+OK\r\n", setResult);
-        assertEquals("+OK\r\n", setResultReset);
-        assertEquals(respSerializer.serializeBulkString(value), getResult);
+// import Components.Service.RespSerializer;
+// import Config.AppConfig;
 
-        assertEquals(respSerializer.serializeBulkString(value2), getResultReset);
-    }
+// @SpringBootTest(classes = AppConfig.class)
+// public class StoreTest {
+// @Autowired
+// private Store store;
 
-    @Test
-    public void testConcurrentlySetting() throws InterruptedException {
-        List<CompletableFuture<Void>> l = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            int finalI = i;
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                for (int j = 0; j < 100; j++) {
-                    store.set("key" + j + "," + finalI, "ooga booga");
-                }
-            });
-            l.add(future);
-        }
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(l.toArray(new CompletableFuture[l.size()]));
-        allFutures.join();
+// @Autowired // Add this annotation
+// private RespSerializer respSerializer;
 
-        assertEquals(1000, store.getKeys().size());
-    }
-}
+// @BeforeEach
+// public void setUp() {
+// store.map.clear();
+// }
+
+// @Test
+// public void testSetAndGetKey() {
+// String key = "testKey";
+// String value = "testValue";
+
+// String setResult = store.set(key, value);
+// String getResult = store.get(key);
+
+// assertEquals("+OK\r\n", setResult);
+// assertEquals(respSerializer.serializeBulkString(value), getResult);
+// }
+
+// @Test
+// public void testSetAndGetKeyExpiry() throws InterruptedException {
+// String key = "testKey";
+// String value = "testValue";
+// int expiryMilliseconds = 100;
+
+// String setResult = store.set(key, value, expiryMilliseconds);
+// String getResult = store.get(key);
+
+// Thread.sleep((long) 100.0);
+
+// String getResultExpiry = store.get(key);
+
+// assertEquals("+OK\r\n", setResult);
+// assertEquals(respSerializer.serializeBulkString(value), getResult);
+
+// assertEquals("$-1\r\n", getResultExpiry);
+// }
+
+// @Test
+// public void testSetAndGetKeyExpiryReset() throws InterruptedException {
+// String key = "testKey";
+// String value = "testValue";
+// String value2 = "testValue2";
+// int expiryMilliseconds = 100;
+
+// String setResult = store.set(key, value, expiryMilliseconds);
+// String getResult = store.get(key);
+// String setResultReset = store.set(key, value2, expiryMilliseconds * 5);
+
+// Thread.sleep((long) 100.0);
+// String getResultReset = store.get(key);
+
+// assertEquals("+OK\r\n", setResult);
+// assertEquals("+OK\r\n", setResultReset);
+// assertEquals(respSerializer.serializeBulkString(value), getResult);
+
+// assertEquals(respSerializer.serializeBulkString(value2), getResultReset);
+// }
+
+// @Test
+// public void testConcurrentlySetting() throws InterruptedException {
+// List<CompletableFuture<Void>> l = new ArrayList<>();
+// for (int i = 0; i < 10; i++) {
+// int finalI = i;
+// CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+// for (int j = 0; j < 100; j++) {
+// store.set("key" + j + "," + finalI, "ooga booga");
+// }
+// });
+// l.add(future);
+// }
+// CompletableFuture<Void> allFutures = CompletableFuture.allOf(l.toArray(new
+// CompletableFuture[l.size()]));
+// allFutures.join();
+
+// assertEquals(1000, store.getKeys().size());
+// }
+// }
