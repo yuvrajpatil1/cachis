@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 
 import Components.Infra.Client;
 import Components.Infra.ConnectionPool;
-import Components.Infra.Slave;
 import Components.Service.CommandHandler;
 import Components.Service.RespSerializer;
+import Components.Service.ResponseDto;
 
 @Component
 public class MasterTcpServer {
@@ -92,8 +92,9 @@ public class MasterTcpServer {
         connectionPool.removeSlave(client);
     }
 
-    private void handleCommand(String[] command, Client client) {
+    private void handleCommand(String[] command, Client client) throws IOException {
         String res = "";
+        byte[] data = null;
         switch (command[0]) {
             case "PING":
                 res = commandHandler.ping(command);
@@ -114,15 +115,11 @@ public class MasterTcpServer {
                 res = commandHandler.replconf(command, client);
                 break;
             case "PSYNC":
-                res = commandHandler.psync(command);
+                ResponseDto resDto = commandHandler.psync(command);
+                res = resDto.response;
+                data = resDto.data;
                 break;
         }
-
-        if (res != null && !res.equals(""))
-            try {
-                client.outputStream.write(res.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        client.send(res, data);
     }
 }

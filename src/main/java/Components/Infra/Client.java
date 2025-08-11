@@ -1,5 +1,6 @@
 package Components.Infra;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -15,5 +16,14 @@ public class Client {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.id = id;
+    }
+
+    public void send(String res, byte[] data) throws IOException {
+        if (res != null && !res.equals(""))
+            outputStream.write(res.getBytes());
+
+        if (data != null) {
+            outputStream.write(data);
+        }
     }
 }
