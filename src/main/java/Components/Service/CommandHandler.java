@@ -1,7 +1,11 @@
 package Components.Service;
 
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,12 +101,10 @@ public class CommandHandler {
                 String[] replConfAck = new String[] { "REPLCONF", "ACK", redisConfig.getMasterReplOffset() + "" };
                 return respSerializer.respArray(replConfAck);
 
-            // case "ACK":
-            // int ackResponse = Integer.parseInt(command[2]);
-            // connectionPool.slaveAck(ackResponse);
-            // String[] replConfAck = new String[] { "REPLCONF", "ACK",
-            // redisConfig.getMasterReplOffset() + "" };
-            // return respSerializer.respArray(replConfAck);
+            case "ACK":
+                int ackResponse = Integer.parseInt(command[2]);
+                connectionPool.slaveAck(ackResponse);
+                break;
 
             case "listening-port":
                 connectionPool.removeClient(client);
@@ -153,9 +155,47 @@ public class CommandHandler {
 
             byte[] header = fullReSyncHeader.getBytes();
 
+            connectionPool.slavesThatAreCaughtUp++;
+
             return new ResponseDto(res, concatenate(header, rdbFileData));
         } else {
             return new ResponseDto("Options not supported yet.");
         }
+    }
+
+    public String wait(String[] command, Instant now) {
+        String[] getAckArr = new String[] { "REPLCONF", "GETACK", "*" };
+        String getAck = respSerializer.respArray(getAckArr);
+        byte[] bytes = getAck.getBytes();
+        int bufferSize = bytes.length;
+
+        int required = Integer.parseInt(command[1]); // no of slaves ww are required to wait for
+        int time = Integer.parseInt(command[2]);
+
+        for (Slave slave : connectionPool.getSlaves()) {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    slave.connection.send(bytes);
+                } catch (IOException e) {
+                    throw new RuntimeException();
+                }
+            });
+        }
+
+        int res = 0;
+        while (true) {
+            if (Duration.between(now, Instant.now()).toMillis() >= time) {
+                break;
+            }
+            if (res >= required) {
+                break;
+            }
+            res = connectionPool.slavesThatAreCaughtUp;
+        }
+        connectionPool.bytesSentToSlaves = +bufferSize;
+        if (res >= required) {
+            return respSerializer.respInteger(required);
+        }
+        return respSerializer.respInteger(res);
     }
 }

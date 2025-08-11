@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -105,6 +106,9 @@ public class MasterTcpServer {
                 break;
             case "SET":
                 res = commandHandler.set(command);
+                String respArr = respSerializer.respArray(command);
+                byte[] bytes = respArr.getBytes();
+                connectionPool.bytesSentToSlaves += bytes.length;
                 // trickle down to slaves
                 CompletableFuture.runAsync(() -> propagate(command));
                 break;
@@ -118,7 +122,13 @@ public class MasterTcpServer {
                 res = commandHandler.replconf(command, client);
                 break;
             case "WAIT":
-                res = respSerializer.respInteger(connectionPool.slavesThatAreCaughtUp);
+                if (connectionPool.bytesSentToSlaves == 0) {
+                    res = respSerializer.respInteger(connectionPool.slavesThatAreCaughtUp);
+                    break;
+                }
+                Instant now = Instant.now();
+                res = commandHandler.wait(command, now);
+                connectionPool.slavesThatAreCaughtUp = 0;
                 break;
             case "PSYNC":
                 ResponseDto resDto = commandHandler.psync(command);
@@ -127,6 +137,7 @@ public class MasterTcpServer {
                 break;
         }
         client.send(res, data);
+
     }
 
     private void propagate(String[] command) {
