@@ -14,9 +14,10 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import Components.Infra.Client;
+import Components.Infra.ConnectionPool;
 import Components.Service.CommandHandler;
 import Components.Service.RespSerializer;
-import Infra.Client;
 
 @Component
 public class SlaveTcpServer {
@@ -30,6 +31,9 @@ public class SlaveTcpServer {
 
     @Autowired
     private RedisConfig redisConfig;
+
+    @Autowired
+    private ConnectionPool connectionPool;
 
     public void startServer() {
         ServerSocket serverSocket = null;
@@ -110,7 +114,7 @@ public class SlaveTcpServer {
             response = new String(inputBuffer, 0, bytesRead, StandardCharsets.UTF_8);
             logger.log(Level.FINE, response);
 
-            // part 2 of the hanshake
+            // part 3 of the hanshake
             String psync = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
             data = psync.getBytes();
             outputStream.write(data);
@@ -128,7 +132,7 @@ public class SlaveTcpServer {
     }
 
     private void handleClient(Client client) throws IOException {
-
+        connectionPool.addClient(client);
         while (client.socket.isConnected()) {
             byte[] buffer = new byte[client.socket.getReceiveBufferSize()];
             int bytesRead = client.inputStream.read(buffer);
@@ -140,6 +144,8 @@ public class SlaveTcpServer {
                 }
             }
         }
+        connectionPool.removeClient(client);
+        connectionPool.removeSlave(client);
     }
 
     private void handleCommand(String[] command, Client client) {
@@ -159,6 +165,9 @@ public class SlaveTcpServer {
                 break;
             case "INFO":
                 res = commandHandler.info(command);
+                break;
+            case "REPLCONF":
+                res = commandHandler.replconf(command, client);
                 break;
         }
 
