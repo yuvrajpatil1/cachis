@@ -82,7 +82,7 @@ public class SlaveTcpServer {
             OutputStream outputStream = master.getOutputStream();
             byte[] inputBuffer = new byte[1024];
 
-            // part 1 of the hanshakes
+            // part 1 of the hanshake
             byte[] data = "*1\r\n$4\r\nPING\r\n".getBytes();
             outputStream.write(data);
             int bytesRead = inputStream.read(inputBuffer, 0, inputBuffer.length);
@@ -90,7 +90,7 @@ public class SlaveTcpServer {
             String response = new String(inputBuffer, 0, bytesRead, StandardCharsets.UTF_8);
             logger.log(Level.FINE, response);
 
-            // prt 2 of the hanshakes
+            // prt 2 of the hanshake
             int lenListeningPort = (redisConfig.getPort() + "").length();
             int listeningPort = redisConfig.getPort();
             String replconf = "*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$" + (lenListeningPort + "") + "\r\n"
@@ -109,6 +109,17 @@ public class SlaveTcpServer {
 
             response = new String(inputBuffer, 0, bytesRead, StandardCharsets.UTF_8);
             logger.log(Level.FINE, response);
+
+            // part 2 of the hanshake
+            String psync = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
+            data = psync.getBytes();
+            outputStream.write(data);
+            bytesRead = inputStream.read(inputBuffer, 0, inputBuffer.length);
+
+            response = new String(inputBuffer, 0, bytesRead, StandardCharsets.UTF_8);
+            logger.log(Level.FINE, response);
+
+            // handlePsyncResponse(inputStream);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
