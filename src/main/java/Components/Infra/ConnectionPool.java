@@ -9,6 +9,15 @@ import org.springframework.stereotype.Component;
 public class ConnectionPool {
     private Set<Client> clients;
     private Set<Slave> slaves;
+    public int slavesThatAreCaughtUp = 0;
+    public int bytesSentToSlaves = 0;
+
+    public void slaveAck(int ackResponse) {
+        // replconf getack *
+        if (this.bytesSentToSlaves == ackResponse) {
+            slavesThatAreCaughtUp++;
+        }
+    }
 
     public ConnectionPool() {
         clients = new HashSet<>();

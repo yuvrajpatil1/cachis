@@ -117,6 +117,9 @@ public class MasterTcpServer {
             case "REPLCONF":
                 res = commandHandler.replconf(command, client);
                 break;
+            case "WAIT":
+                res = respSerializer.respInteger(connectionPool.slavesThatAreCaughtUp);
+                break;
             case "PSYNC":
                 ResponseDto resDto = commandHandler.psync(command);
                 res = resDto.response;

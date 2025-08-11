@@ -168,7 +168,9 @@ public class SlaveTcpServer {
 
                 if (commandArray.length >= 2 && commandArray[0].equals("REPLCONF")
                         && commandArray[1].equals("GETACK")) {
-                    outputStream.write(commandResult.getBytes());
+                    if (!commandResult.equals("") && commandResult != null) {
+                        outputStream.write(commandResult.getBytes());
+                    }
                     offset++;
                     List<Byte> leftOverBytes = new ArrayList<>();
                     while (true) {
