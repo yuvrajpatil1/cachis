@@ -104,7 +104,7 @@ public class CommandHandler {
             case "ACK":
                 int ackResponse = Integer.parseInt(command[2]);
                 connectionPool.slaveAck(ackResponse);
-                break;
+                return "";
 
             case "listening-port":
                 connectionPool.removeClient(client);
