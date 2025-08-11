@@ -118,6 +118,7 @@ public class SlaveTcpServer {
 
             response = new String(inputBuffer, 0, bytesRead, StandardCharsets.UTF_8);
             logger.log(Level.FINE, response);
+            System.out.println(response);
 
             // handlePsyncResponse(inputStream);
 
