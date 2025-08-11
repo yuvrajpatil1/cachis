@@ -125,7 +125,7 @@ public class SlaveTcpServer {
             List<Integer> res = handlePsyncResponse(inputStream);
 
             while (master.isConnected()) {
-                int offset = 0;
+                int offset = 1;
                 StringBuilder sb = new StringBuilder();
                 List<Byte> bytes = new ArrayList<>();
 
