@@ -95,8 +95,7 @@ public class CommandHandler {
         switch (command[1]) {
             case "GETACK":
                 String[] replConfAck = new String[] { "REPLCONF", "ACK", redisConfig.getMasterReplOffset() + "" };
-                respSerializer.respArray(replConfAck);
-                return "+OK\r\n";
+                return respSerializer.respArray(replConfAck);
 
             case "listening-port":
                 connectionPool.removeClient(client);
