@@ -21,7 +21,7 @@ public class Main {
           port = Integer.parseInt(args[i + 1]);
           redisConfig.setPort(port);
           break;
-        case "--reolicaof":
+        case "--replicaof":
           redisConfig.setRole("slave");
           // <MASTER_HOST> <MASTER_PORT>
           String masterHost = args[i + 1].split(" ")[0];
