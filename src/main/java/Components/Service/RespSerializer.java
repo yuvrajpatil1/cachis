@@ -225,8 +225,9 @@ public class RespSerializer {
 
         res.add("*" + len);
         for (String s : command) {
+            int stringLen = s.length();
             s.length();
-            res.add("$" + len);
+            res.add("$" + stringLen);
             res.add(s);
         }
         return String.join("\r\n", res) + "\r\n";
