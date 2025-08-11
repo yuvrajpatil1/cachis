@@ -1,13 +1,15 @@
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import Components.Server.RedisConfig;
-import Components.Server.TcpServer;
+import Components.Server.SlaveTcpServer;
+import Components.Server.MasterTcpServer;
 import Config.AppConfig;
 
 public class Main {
   public static void main(String[] args) {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-    TcpServer app = context.getBean(TcpServer.class);
+    MasterTcpServer master = context.getBean(MasterTcpServer.class);
+    SlaveTcpServer slave = context.getBean(SlaveTcpServer.class);
     RedisConfig redisConfig = context.getBean(RedisConfig.class);
 
     int port = 6379;
@@ -32,6 +34,10 @@ public class Main {
 
       }
     }
-    app.startServer(port);
+
+    if (redisConfig.getRole().equals("slave"))
+      slave.startServer();
+    else
+      master.startServer();
   }
 }

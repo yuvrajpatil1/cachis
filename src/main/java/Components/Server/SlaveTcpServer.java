@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -18,8 +19,8 @@ import Components.Service.RespSerializer;
 import Infra.Client;
 
 @Component
-public class TcpServer {
-    private static final Logger logger = Logger.getLogger(TcpServer.class.getName());
+public class SlaveTcpServer {
+    private static final Logger logger = Logger.getLogger(SlaveTcpServer.class.getName());
 
     @Autowired
     private RespSerializer respSerializer;
@@ -27,13 +28,21 @@ public class TcpServer {
     @Autowired
     private CommandHandler commandHandler;
 
-    public void startServer(int port) {
+    @Autowired
+    private RedisConfig redisConfig;
+
+    public void startServer() {
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
-        // int port = 6379;
+        int port = redisConfig.getPort();
+
         try {
             serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);
+
+            CompletableFuture<Void> slaveCompletableFuture = CompletableFuture.runAsync(this::initiateSlavery);
+            slaveCompletableFuture.thenRun(() -> System.out.println("Replication completed"));
+
             int id = 0;
 
             while (true) {
@@ -67,6 +76,24 @@ public class TcpServer {
         }
     }
 
+    private void initiateSlavery() {
+        try (Socket master = new Socket(redisConfig.getMasterHost(), redisConfig.getMasterPort())) {
+            InputStream inputStream = master.getInputStream();
+            OutputStream outputStream = master.getOutputStream();
+            byte[] inputBuffer = new byte[1024];
+            byte[] data = "*1\r\n$4\r\nPING\r\n".getBytes();
+
+            outputStream.write(data);
+            int bytesRead = inputStream.read(inputBuffer, 0, inputBuffer.length);
+
+            String response = new String(inputBuffer, 0, bytesRead, StandardCharsets.UTF_8);
+            logger.log(Level.FINE, response);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+    }
+
     private void handleClient(Client client) throws IOException {
 
         while (client.socket.isConnected()) {
@@ -92,7 +119,7 @@ public class TcpServer {
                 res = commandHandler.echo(command);
                 break;
             case "SET":
-                res = commandHandler.set(command);
+                res = "-READONLY You can't write against a replica.\r\n";
                 break;
             case "GET":
                 res = commandHandler.get(command);
