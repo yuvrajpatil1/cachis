@@ -101,6 +101,9 @@ public class MasterTcpServer {
             case "PING":
                 res = commandHandler.ping(command);
                 break;
+            case "INCR":
+                res = commandHandler.incr(command);
+                break;
             case "ECHO":
                 res = commandHandler.echo(command);
                 break;
