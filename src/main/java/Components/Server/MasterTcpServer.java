@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import Components.Infra.Client;
 import Components.Infra.ConnectionPool;
+import Components.Infra.Slave;
 import Components.Service.CommandHandler;
 import Components.Service.RespSerializer;
 import Components.Service.ResponseDto;
@@ -104,6 +105,8 @@ public class MasterTcpServer {
                 break;
             case "SET":
                 res = commandHandler.set(command);
+                // trickle down to slaves
+                CompletableFuture.runAsync(() -> propagate(command));
                 break;
             case "GET":
                 res = commandHandler.get(command);
@@ -121,5 +124,16 @@ public class MasterTcpServer {
                 break;
         }
         client.send(res, data);
+    }
+
+    private void propagate(String[] command) {
+        String commandRespString = respSerializer.respArray(command);
+        try {
+            for (Slave slave : connectionPool.getSlaves()) {
+                slave.send(commandRespString.getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
