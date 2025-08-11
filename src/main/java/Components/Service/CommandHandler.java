@@ -192,7 +192,7 @@ public class CommandHandler {
             }
             res = connectionPool.slavesThatAreCaughtUp;
         }
-        connectionPool.bytesSentToSlaves = +bufferSize;
+        connectionPool.bytesSentToSlaves += bufferSize;
         if (res >= required) {
             return respSerializer.respInteger(required);
         }
