@@ -209,7 +209,6 @@ public class SlaveTcpServer {
                 res = commandHandler.replconf(command, master);
                 break;
         }
-
         return res;
     }
 
