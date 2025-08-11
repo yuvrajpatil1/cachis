@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import Components.Infra.Client;
 import Components.Infra.ConnectionPool;
+import Components.Infra.Slave;
 import Components.Service.CommandHandler;
 import Components.Service.RespSerializer;
 
@@ -111,6 +112,9 @@ public class MasterTcpServer {
                 break;
             case "REPLCONF":
                 res = commandHandler.replconf(command, client);
+                break;
+            case "PSYNC":
+                res = commandHandler.psync(command);
                 break;
         }
 
