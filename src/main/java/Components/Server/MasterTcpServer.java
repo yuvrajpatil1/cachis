@@ -137,18 +137,18 @@ public class MasterTcpServer {
 
                 client.endTransaction();
                 while (!commands.isEmpty()) {
-                    String[] commandToPropagate = commands.poll();
                     String respArr = respSerializer.respArray(command);
-                    byte[] bytes = respArr.getBytes();
-                    connectionPool.bytesSentToSlaves += bytes.length;
-                    // trickle down to slaves
-                    CompletableFuture.runAsync(() -> propagate(command));
-
-                    // String commandRespString = respSerializer.respArray(commandToPropagate);
-                    // byte[] toCount = commandRespString.getBytes();
-                    // connectionPool.bytesSentToSlaves += toCount.length;
+                    // byte[] bytes = respArr.getBytes();
+                    // connectionPool.bytesSentToSlaves += bytes.length;
                     // // trickle down to slaves
-                    // CompletableFuture.runAsync(() -> propagate(commandToPropagate));
+                    // CompletableFuture.runAsync(() -> propagate(command));
+
+                    String[] commandToPropagate = commands.poll();
+                    String commandRespString = respSerializer.respArray(commandToPropagate);
+                    byte[] toCount = commandRespString.getBytes();
+                    connectionPool.bytesSentToSlaves += toCount.length;
+                    // trickle down to slaves
+                    CompletableFuture.runAsync(() -> propagate(commandToPropagate));
 
                 }
 
@@ -202,16 +202,16 @@ public class MasterTcpServer {
                 break;
             case "SET":
                 res = commandHandler.set(command);
-                // String commandRespString = respSerializer.respArray(command);
-                // byte[] toCount = commandRespString.getBytes();
-                // connectionPool.bytesSentToSlaves += toCount.length;
-                // // trickle down to slaves
-                // CompletableFuture.runAsync(() -> propagate(command));
-                String respArr = respSerializer.respArray(command);
-                byte[] bytes = respArr.getBytes();
-                connectionPool.bytesSentToSlaves += bytes.length;
+                String commandRespString = respSerializer.respArray(command);
+                byte[] toCount = commandRespString.getBytes();
+                connectionPool.bytesSentToSlaves += toCount.length;
                 // trickle down to slaves
                 CompletableFuture.runAsync(() -> propagate(command));
+                // String respArr = respSerializer.respArray(command);
+                // byte[] bytes = respArr.getBytes();
+                // connectionPool.bytesSentToSlaves += bytes.length;
+                // // trickle down to slaves
+                // CompletableFuture.runAsync(() -> propagate(command));
                 break;
             case "GET":
                 res = commandHandler.get(command);
