@@ -137,7 +137,7 @@ public class MasterTcpServer {
 
                 client.endTransaction();
                 while (!commands.isEmpty()) {
-                    String respArr = respSerializer.respArray(command);
+                    // String respArr = respSerializer.respArray(command);
                     // byte[] bytes = respArr.getBytes();
                     // connectionPool.bytesSentToSlaves += bytes.length;
                     // // trickle down to slaves
