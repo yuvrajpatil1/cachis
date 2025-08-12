@@ -241,6 +241,14 @@ public class RespSerializer {
         return String.join("\r\n", res) + "\r\n";
     }
 
+    public String respArray(List<String> command) {
+        List<String> res = new ArrayList<>();
+        int len = command.size();
+        res.add("*" + len + "\r\n");
+        res.addAll(command);
+        return String.join("", res);
+    }
+
     public String[] parseArray(String[] parts) {
         String len = parts[0];
         int length = Integer.parseInt(len);

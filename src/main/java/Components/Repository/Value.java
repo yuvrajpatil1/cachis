@@ -7,10 +7,12 @@ public class Value {
     public LocalDateTime created;
     public LocalDateTime expiry;
 
+    public boolean isDeletedInTransaction; // flag to delete after txn
+
     public Value(String val, LocalDateTime created, LocalDateTime expiry) {
         this.val = val;
         this.created = created;
         this.expiry = expiry;
+        this.isDeletedInTransaction = false;
     }
-
 }
