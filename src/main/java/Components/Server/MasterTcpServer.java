@@ -160,7 +160,7 @@ public class MasterTcpServer {
 
     private void addCommandToTransaction(String[] command, Client client) throws IOException {
         client.commandQueue.offer(command);
-        client.send("+QUEUE\r\n");
+        client.send("+QUEUED\r\n");
     }
 
     private boolean isTransactionalControlCommand(String command) {
