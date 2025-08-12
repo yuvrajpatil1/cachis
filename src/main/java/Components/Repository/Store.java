@@ -115,7 +115,7 @@ public class Store {
         Map<String, Value> localCache = new HashMap<>();
         List<String> responses = new ArrayList<>();
         try {
-            while (client.commandQueue.isEmpty()) {
+            while (!client.commandQueue.isEmpty()) {
                 String[] command = client.commandQueue.poll();
                 String response = transactionCacheApplier.apply(command, localCache);
                 responses.add(response);

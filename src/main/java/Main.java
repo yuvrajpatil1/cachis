@@ -31,7 +31,6 @@ public class Main {
           redisConfig.setMasterHost((masterHost));
           redisConfig.setMasterPort(masterPort);
           break;
-
       }
     }
 
