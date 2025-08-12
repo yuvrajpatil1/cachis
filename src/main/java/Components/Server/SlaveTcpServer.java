@@ -205,9 +205,9 @@ public class SlaveTcpServer {
         switch (cmd) {
             case "SET":
                 commandHandler.set(command);
-                String respArr = respSerializer.respArray(command);
-                byte[] bytes = respArr.getBytes();
-                connectionPool.bytesSentToSlaves += bytes.length;
+                String commandRespString = respSerializer.respArray(command);
+                byte[] toCount = commandRespString.getBytes();
+                connectionPool.bytesSentToSlaves += toCount.length;
                 // send down to all the slaves
                 CompletableFuture.runAsync(() -> propagate(command));
                 break;
@@ -293,8 +293,8 @@ public class SlaveTcpServer {
                     res = respSerializer.respInteger(connectionPool.slavesThatAreCaughtUp);
                     break;
                 }
-                Instant now = Instant.now();
-                res = commandHandler.wait(command, now);
+                Instant start = Instant.now();
+                res = commandHandler.wait(command, start);
                 connectionPool.slavesThatAreCaughtUp = 0;
                 break;
         }

@@ -227,8 +227,8 @@ public class MasterTcpServer {
                     res = respSerializer.respInteger(connectionPool.slavesThatAreCaughtUp);
                     break;
                 }
-                Instant now = Instant.now();
-                res = commandHandler.wait(command, now);
+                Instant start = Instant.now();
+                res = commandHandler.wait(command, start);
                 connectionPool.slavesThatAreCaughtUp = 0;
                 break;
             case "PSYNC":
