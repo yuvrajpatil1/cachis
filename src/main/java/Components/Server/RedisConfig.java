@@ -1,33 +1,23 @@
 package Components.Server;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 
-// import lombok.Getter;
-// import lombok.Setter;
+import java.util.UUID;
 
-// @Getter
-// @Setter
 @Component
 public class RedisConfig {
 
-    public String role;
-    public int port;
-    public String masterHost;
-    public int masterPort;
-    // private String role;
-    // private int port;
-    // private String masterHost;
-    // private int masterPort;
-
+    private String role;
+    private int port;
+    private String masterHost;
+    private int masterPort;
     private String masterReplId = null;
     private Long masterReplOffset = null;
 
     public String getMasterReplId() {
         if (masterReplId == null) {
             masterReplId = UUID.randomUUID().toString().replace("-", "")
-                    + UUID.randomUUID().toString().replace("-", "masterHost").substring(0, 8);
+                    + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         }
         return masterReplId;
     }
@@ -67,12 +57,12 @@ public class RedisConfig {
         return role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public int getPort() {
         return port;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setPort(int port) {
