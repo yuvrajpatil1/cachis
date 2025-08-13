@@ -3,6 +3,7 @@ package Components.Server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -198,6 +199,10 @@ public class SlaveTcpServer {
     }
 
     private String handleCommandFromMaster(String[] command, Client master) {
+        System.out.println("++++++++++++++++++ received comand from master ++++++++++++++++++++++++++++++");
+        for (String c : command) {
+            System.out.println(c + " ");
+        }
         String cmd = command[0];
         cmd = cmd.toUpperCase();
         String res = "";
@@ -222,6 +227,12 @@ public class SlaveTcpServer {
         String commandRespString = respSerializer.respArray(command);
         try {
             for (Slave slave : connectionPool.getSlaves()) {
+                System.out.println("++++++++++++++++++ sending cmd down to slave ++++++++++++++++++++++++++++++");
+                System.out.println("coammand: " + commandRespString);
+                System.out.println(slave.connection.id);
+                InetAddress remoteAddress = slave.connection.socket.getInetAddress();
+                System.out.println("Remote IP address: " + remoteAddress.getHostAddress() + ": "
+                        + slave.connection.socket.getPort());
                 slave.send(commandRespString.getBytes());
             }
         } catch (IOException e) {
